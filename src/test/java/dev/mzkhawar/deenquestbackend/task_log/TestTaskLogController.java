@@ -6,6 +6,7 @@ import dev.mzkhawar.deenquestbackend.task.TaskRepository;
 import dev.mzkhawar.deenquestbackend.user.Role;
 import dev.mzkhawar.deenquestbackend.user.User;
 import dev.mzkhawar.deenquestbackend.user.UserRepository;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 public class TestTaskLogController {
 
     @Autowired
