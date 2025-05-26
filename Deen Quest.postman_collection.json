@@ -1,0 +1,459 @@
+{
+	"info": {
+		"_postman_id": "a5839742-3086-4430-a8b6-1a11e95c4026",
+		"name": "Deen Quest",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "37692286"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const json = pm.response.json();",
+									"pm.collectionVariables.set(\"jwt\", json.jwt);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"john\",\n    \"lastName\": \"doe\",\n    \"email\": \"john_doe@myemail.com\",\n    \"password\": \"sfw3@fdgSD\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{auth_url}}/register",
+							"host": [
+								"{{auth_url}}"
+							],
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Authenticate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.json();",
+									"if (response.success) {",
+									"    pm.collectionVariables.set(\"jwt\", response.jwt);",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"john_doe@myemail.com\",\n    \"password\": \"sfw3@fdgSD\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{auth_url}}/authenticate",
+							"host": [
+								"{{auth_url}}"
+							],
+							"path": [
+								"authenticate"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Task",
+			"item": [
+				{
+					"name": "Create Task",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response;",
+									"const task_id = response.headers.get(\"Location\").slice(-1)",
+									"pm.collectionVariables.set(\"task_id\", task_id)",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"test task name\",\n    \"description\": \"test task description\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{task_url}}",
+							"host": [
+								"{{task_url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "All",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{task_url}}",
+							"host": [
+								"{{task_url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "By Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{task_url}}/{{task_id}}",
+							"host": [
+								"{{task_url}}"
+							],
+							"path": [
+								"{{task_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"updated task name\",\n    \"description\": \"updated task description\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{task_url}}/{{task_id}}",
+							"host": [
+								"{{task_url}}"
+							],
+							"path": [
+								"{{task_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Task",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{task_url}}/{{task_id}}",
+							"host": [
+								"{{task_url}}"
+							],
+							"path": [
+								"{{task_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Task Log",
+			"item": [
+				{
+					"name": "Create Task Log",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response;",
+									"const task_log_id = response.headers.get(\"Location\").slice(-1);",
+									"pm.collectionVariables.set(\"task_log_id\", task_log_id);",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"taskId\": 1,\n    \"completedAt\": \"2025-05-21T20:00:00.000\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{task_log_url}}",
+							"host": [
+								"{{task_log_url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{task_log_url}}",
+							"host": [
+								"{{task_log_url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "By Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{task_log_url}}/{{task_log_id}}",
+							"host": [
+								"{{task_log_url}}"
+							],
+							"path": [
+								"{{task_log_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "By Date Range",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{task_log_url}}/date-range?from=2025-05-21T00:00:00&to=2025-05-21T23:59:59",
+							"host": [
+								"{{task_log_url}}"
+							],
+							"path": [
+								"date-range"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "2025-05-21T00:00:00"
+								},
+								{
+									"key": "to",
+									"value": "2025-05-21T23:59:59"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"taskId\": 1,\n    \"completedAt\": \"2025-05-23T20:00:00.000\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{task_log_url}}/{{task_log_id}}",
+							"host": [
+								"{{task_log_url}}"
+							],
+							"path": [
+								"{{task_log_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{jwt}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "auth_url",
+			"value": "http://localhost:8080/api/v1/auth",
+			"type": "string"
+		},
+		{
+			"key": "task_url",
+			"value": "http://localhost:8080/api/v1/tasks",
+			"type": "string"
+		},
+		{
+			"key": "task_log_url",
+			"value": "http://localhost:8080/api/v1/task-logs",
+			"type": "string"
+		},
+		{
+			"key": "jwt",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "task_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "task_log_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
