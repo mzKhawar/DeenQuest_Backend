@@ -1,6 +1,5 @@
 package dev.mzkhawar.deenquestbackend.task_log;
 
-import dev.mzkhawar.deenquestbackend.task.Task;
 import dev.mzkhawar.deenquestbackend.task.TaskService;
 import dev.mzkhawar.deenquestbackend.user.User;
 import jakarta.validation.Valid;
@@ -24,40 +23,43 @@ public class TaskLogController {
     private final TaskService taskService;
 
     @PostMapping
-    public ResponseEntity<Void> createTaskLog(@RequestBody @Valid TaskLogRequest taskLogRequest, @AuthenticationPrincipal User user, UriComponentsBuilder ucb) {
-        Task task = taskService.findById(taskLogRequest.getTaskId());
-        TaskLog taskLogToSave = TaskLog.builder()
-                .task(task)
-                .user(user)
-                .completedAt(taskLogRequest.getCompletedAt())
-                .build();
-        TaskLog savedTask = taskLogService.save(taskLogToSave);
-        URI location = ucb.path("/api/v1/task-logs/{id}").build(savedTask.getId());
+    public ResponseEntity<Void> createTaskLog(
+            @RequestBody @Valid TaskLogRequest taskLogRequest, @AuthenticationPrincipal User user, UriComponentsBuilder ucb) {
+        TaskLogResponse taskLogResponse = taskLogService.createTaskLog(taskLogRequest, user);
+        URI location = ucb.path("/api/v1/task-logs/{id}").build(taskLogResponse.getId());
         return ResponseEntity.created(location).build();
     }
 
     @GetMapping
-    public ResponseEntity<List<TaskLog>> getTaskLogs(@AuthenticationPrincipal User user) {
+    public ResponseEntity<List<TaskLogResponse>> getTaskLogs(@AuthenticationPrincipal User user) {
         return ResponseEntity.ok(taskLogService.findAll(user));
     }
 
     @GetMapping(value = "/date-range", params = {"from", "to"})
-    public ResponseEntity<List<TaskLog>> getTaskLogsBetweenDates(
+    public ResponseEntity<List<TaskLogResponse>> getTaskLogsByDateRange(
             @AuthenticationPrincipal User user,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to) {
-        return ResponseEntity.ok(taskLogService.findBetweenDates(user, from, to));
+        return ResponseEntity.ok(taskLogService.findByDateRange(user, from, to));
+    }
+
+    @GetMapping(value = "/date-range/{task-id}", params = {"from", "to"})
+    public ResponseEntity<List<TaskLogResponse>> getTaskLogsByTaskAndDateRange(
+            @PathVariable("task-id") Long taskId,
+            @AuthenticationPrincipal User user,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to) {
+        return ResponseEntity.ok(taskLogService.findByTaskAndDateRange(user, taskId, from, to));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TaskLog> getTaskLogById(@PathVariable Long id) {
-        TaskLog taskLog = taskLogService.findById(id);
-        return ResponseEntity.ok(taskLog);
+    public ResponseEntity<TaskLogResponse> getTaskLogById(@PathVariable Long id) {
+        return ResponseEntity.ok(taskLogService.findById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateTaskLog(@PathVariable Long id, @RequestBody TaskLog taskLog) {
-        taskLogService.update(id, taskLog);
+    public ResponseEntity<Void> updateTaskLog(@PathVariable Long id, @RequestBody @Valid TaskLogRequest taskLogRequest) {
+        taskLogService.update(id, taskLogRequest);
         return ResponseEntity.noContent().build();
     }
 
@@ -66,5 +68,4 @@ public class TaskLogController {
         taskLogService.delete(id);
         return ResponseEntity.noContent().build();
     }
-
 }

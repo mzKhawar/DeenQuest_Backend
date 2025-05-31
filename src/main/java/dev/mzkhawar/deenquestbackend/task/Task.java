@@ -1,6 +1,5 @@
 package dev.mzkhawar.deenquestbackend.task;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import dev.mzkhawar.deenquestbackend.task_log.TaskLog;
 import jakarta.persistence.*;
@@ -29,7 +28,7 @@ public class Task {
 
     private String description;
 
-    @OneToMany(mappedBy = "task")
-    @JsonIgnore
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
+    @JsonManagedReference("task-taskLogs")
     private List<TaskLog> taskLogs;
 }

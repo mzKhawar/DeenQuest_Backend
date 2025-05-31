@@ -5,6 +5,7 @@ import dev.mzkhawar.deenquestbackend.user.Role;
 import dev.mzkhawar.deenquestbackend.user.User;
 import dev.mzkhawar.deenquestbackend.user.UserRepository;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,17 +13,18 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
@@ -45,8 +47,6 @@ public class TestTaskController {
 
     @BeforeEach
     void setUp() {
-        userRepository.deleteAll();
-        taskRepository.deleteAll();
         testUser = User.builder()
                 .firstName("John")
                 .lastName("Cena")
@@ -64,8 +64,14 @@ public class TestTaskController {
         taskRepository.save(testTask);
     }
 
+    @AfterEach
+    void tearDown() {
+        taskRepository.deleteAll();
+        userRepository.deleteAll();
+    }
+
     @Test
-    void givenValidTaskRequest_whenCreateTask_thenReturnCreatedTaskLocation() throws Exception {
+    void givenValidTaskRequest_whenCreateTask_thenPersistsTaskAndReturnsTaskLocation() throws Exception {
         String taskName = "New Task";
         String taskDescription = "New Test Description";
         String taskRequestJson = """
@@ -114,18 +120,22 @@ public class TestTaskController {
     void givenExistingTasks_whenGetAllTasks_thenReturnsAllTasks() throws Exception {
         mockMvc.perform(get("/api/v1/tasks")
                         .header("Authorization", "Bearer " + jwt))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name").value(testTask.getName()))
-                .andExpect(jsonPath("$[0].description").value(testTask.getDescription()));
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$[0].name").value(testTask.getName()),
+                        jsonPath("$[0].description").value(testTask.getDescription())
+                );
     }
 
     @Test
     void givenExistingTask_whenGetTaskById_thenReturnsTask() throws Exception {
         mockMvc.perform(get("/api/v1/tasks/" + testTask.getId())
                 .header("Authorization", "Bearer " + jwt))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(testTask.getName()))
-                .andExpect(jsonPath("$.description").value(testTask.getDescription()));
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$.name").value(testTask.getName()),
+                        jsonPath("$.description").value(testTask.getDescription())
+                );
     }
 
     @Test
@@ -136,7 +146,7 @@ public class TestTaskController {
     }
 
     @Test
-    void givenValidTaskRequest_whenUpdateTask_thenReturnsNoContent() throws Exception {
+    void givenValidTaskRequest_whenUpdateTask_thenUpdatesTaskAndReturnsNoContent() throws Exception {
         String updatedTaskName = "Updated Task Name";
         String updatedTaskDescription = "Updated Description";
         String taskUpdateRequest = """
@@ -158,10 +168,10 @@ public class TestTaskController {
     }
 
     @Test
-    void givenValidTaskRequest_whenDeleteTask_thenReturnsNoContent() throws Exception {
+    void givenValidTaskRequest_whenDeleteTask_thenDeletesTaskAndReturnsNoContent() throws Exception {
         mockMvc.perform(delete("/api/v1/tasks/" + testTask.getId())
                         .header("Authorization", "Bearer " + jwt))
                 .andExpect(status().isNoContent());
-        assertThrows(NoSuchElementException.class, () -> taskRepository.findById(testTask.getId()).orElseThrow());
+        assertTrue(taskRepository.findById(testTask.getId()).isEmpty());
     }
 }

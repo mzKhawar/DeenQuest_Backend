@@ -1,6 +1,5 @@
 package dev.mzkhawar.deenquestbackend.config;
 
-import dev.mzkhawar.deenquestbackend.user.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

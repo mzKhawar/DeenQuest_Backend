@@ -17,26 +17,25 @@ public class TaskController {
     private final TaskService taskService;
 
     @PostMapping
-    public ResponseEntity<Void> createTask(@RequestBody @Valid Task task, UriComponentsBuilder ucb) {
-        Task savedTask = taskService.save(task);
-        URI savedTaskURI = ucb.path("api/v1/tasks/{id}").build(savedTask.getId());
+    public ResponseEntity<Void> createTask(@RequestBody @Valid TaskRequest taskRequest, UriComponentsBuilder ucb) {
+        TaskResponse taskResponse = taskService.createTask(taskRequest);
+        URI savedTaskURI = ucb.path("api/v1/tasks/{id}").build(taskResponse.getId());
         return ResponseEntity.created(savedTaskURI).build();
     }
 
     @GetMapping
-    public ResponseEntity<List<Task>> getAllTasks() {
+    public ResponseEntity<List<TaskResponse>> getTasks() {
         return ResponseEntity.ok(taskService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Task> getTaskById(@PathVariable Long id) {
-        Task task = taskService.findById(id);
-        return ResponseEntity.ok(task);
+    public ResponseEntity<TaskResponse> getTaskById(@PathVariable Long id) {
+        return ResponseEntity.ok(taskService.findById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateTask(@PathVariable Long id, @RequestBody @Valid Task task) {
-        taskService.update(id, task);
+    public ResponseEntity<Void> updateTask(@PathVariable Long id, @RequestBody @Valid TaskRequest taskRequest) {
+        taskService.update(id, taskRequest);
         return ResponseEntity.noContent().build();
     }
 

@@ -4,7 +4,7 @@ spring:
   application:
     name: deen-quest-backend
   datasource:
-    url: jdbc:postgresql://localhost:5432/deen-quest-db
+    url: ${db.url}
     username: ${db.username}
     password: ${db.password}
     driver-class-name: org.postgresql.Driver

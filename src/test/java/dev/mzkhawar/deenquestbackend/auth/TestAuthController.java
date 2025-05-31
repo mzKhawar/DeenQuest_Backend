@@ -5,6 +5,7 @@ import dev.mzkhawar.deenquestbackend.user.Role;
 import dev.mzkhawar.deenquestbackend.user.User;
 import dev.mzkhawar.deenquestbackend.user.UserRepository;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,17 +13,19 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.emptyString;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
@@ -40,7 +43,6 @@ public class TestAuthController {
 
     @BeforeEach
     void setUp() {
-        userRepository.deleteAll();
         testUser = User.builder()
                 .firstName("John")
                 .lastName("Cena")
@@ -51,8 +53,13 @@ public class TestAuthController {
         userRepository.save(testUser);
     }
 
+    @AfterEach
+    void tearDown() {
+        userRepository.deleteAll();
+    }
+
     @Test
-    void givenValidRegisterRequest_whenRegister_thenReturnsOkWithJwt() throws Exception {
+    void givenValidRegisterRequest_whenRegister_thenPersistsUserAndReturnsOkWithJwt() throws Exception {
         String firstName = "John";
         String lastName = "Doe";
         String email = "john_doe@myemail.com";
@@ -95,12 +102,11 @@ public class TestAuthController {
                         .content(registerRequestJson))
                 .andExpect(status().isBadRequest());
 
-
         assertTrue(userRepository.findByEmail(email).isEmpty());
     }
 
     @Test
-    void givenValidCredentials_whenAuthenticate_thenReturnsOk_WithJwt() throws Exception {
+    void givenValidCredentials_whenAuthenticate_thenReturnsOkWithJwt() throws Exception {
         String authenticationRequestJson = """
                 {
                     "email": "%s",
@@ -163,5 +169,4 @@ public class TestAuthController {
     }
 
     // todo: expired/invalid jwt
-
 }

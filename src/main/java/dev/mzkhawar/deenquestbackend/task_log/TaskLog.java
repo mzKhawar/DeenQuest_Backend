@@ -1,7 +1,6 @@
 package dev.mzkhawar.deenquestbackend.task_log;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import dev.mzkhawar.deenquestbackend.task.Task;
 import dev.mzkhawar.deenquestbackend.user.User;
 import jakarta.persistence.*;
@@ -25,7 +24,7 @@ public class TaskLog {
     private Long id;
 
     @NotNull(message = "User id is required.")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @JsonBackReference("user-taskLogs")
     private User user;
@@ -35,7 +34,8 @@ public class TaskLog {
     private LocalDateTime completedAt;
 
     @NotNull(message = "Task id is required.")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_id")
+    @JsonBackReference("task-taskLogs")
     private Task task;
 }

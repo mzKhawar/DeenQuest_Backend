@@ -4,29 +4,33 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class TaskService {
 
     private final TaskRepository taskRepository;
+    private final TaskMapper taskMapper;
 
-    public Task save(Task task) {
-        return taskRepository.save(task);
+    public TaskResponse createTask(TaskRequest taskRequest) {
+        Task savedTask = taskRepository.save(taskMapper.toEntity(taskRequest));
+        return taskMapper.toResponse(savedTask);
     }
 
-    public List<Task> findAll() {
-        return taskRepository.findAll();
+    public List<TaskResponse> findAll() {
+        return taskRepository.findAll().stream().map(taskMapper::toResponse).collect(Collectors.toList());
     }
 
-    public Task findById(Long id) {
-        return taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException("Task not found"));
+    public TaskResponse findById(Long id) throws TaskNotFoundException {
+        Task task = taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException("Task not found"));
+        return taskMapper.toResponse(task);
     }
 
-    public void update(Long id, Task task) {
-        Task taskToUpdate = findById(id);
-        taskToUpdate.setName(task.getName());
-        taskToUpdate.setDescription(task.getDescription());
+    public void update(Long id, TaskRequest taskRequest) throws TaskNotFoundException {
+        Task taskToUpdate = taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException("Task not found"));
+        taskToUpdate.setName(taskRequest.getName());
+        taskToUpdate.setDescription(taskRequest.getDescription());
         taskRepository.save(taskToUpdate);
     }
 

@@ -25,15 +25,21 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue
     private Long id;
+
     private String firstName;
     private String lastName;
+
     @Column(unique = true, nullable = false)
     private String email;
+
     @Column(nullable = false)
     private String password;
+
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Role role;
-    @OneToMany(mappedBy = "user")
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonManagedReference("user-taskLogs")
     private List<TaskLog> taskLogs;
 

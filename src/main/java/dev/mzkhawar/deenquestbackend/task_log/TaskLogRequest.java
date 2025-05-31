@@ -14,8 +14,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class TaskLogRequest {
 
-    @NotNull
+    @NotNull(message = "Task id is required.")
     private Long taskId;
-    @NotNull
+
+    @NotNull(message = "Completed At LocalDateTime required.")
     private LocalDateTime completedAt;
 }
