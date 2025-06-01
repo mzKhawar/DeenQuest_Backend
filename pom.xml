@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>dev.mzkhawar</groupId>
-    <artifactId>deen-quest-backend</artifactId>
+    <artifactId>DeenQuest_Backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>deen-quest-backend</name>
     <description>deen-quest-backend</description>

@@ -2,7 +2,7 @@ spring:
   config:
     import: optional:file:./secrets.properties
   application:
-    name: deen-quest-backend
+    name: DeenQuest_Backend
   datasource:
     url: ${db.url}
     username: ${db.username}
