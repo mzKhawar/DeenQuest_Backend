@@ -2,6 +2,7 @@ package dev.mzkhawar.deenquestbackend.config;
 
 import dev.mzkhawar.deenquestbackend.task.TaskNotFoundException;
 import dev.mzkhawar.deenquestbackend.task_log.TaskLogNotFoundException;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
