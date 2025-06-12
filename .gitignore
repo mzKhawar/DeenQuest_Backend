@@ -33,3 +33,5 @@ build/
 
 ### VS Code ###
 .vscode/
+# cors for testing only
+/src/main/java/dev/mzkhawar/deenquestbackend/config/WebConfiguration.java
